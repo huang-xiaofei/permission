@@ -1,0 +1,6 @@
+rootProject.name = 'xyl'
+include 'common'
+include 'web'
+include 'business'
+include 'boot-jdbc'
+

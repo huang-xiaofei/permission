@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.szmtjk.business.db.dao.FileImportStatusDAO">
+    <resultMap id="AllColumnMap" type="com.szmtjk.business.db.entity.FileImportStatusDO">
+        <result property="id" column="ID"/>
+        <result property="bizType" column="BIZTYPE"/>
+        <result property="fileName" column="FILENAME"/>
+        <result property="fileNo" column="FILENO"/>
+        <result property="status" column="STATUS"/>
+        <result property="tip" column="TIP"/>
+        <result property="created" column="CREATED"/>
+        <result property="updated" column="UPDATED"/>
+        <result property="isDeleted" column="ISDELETED"/>
+    </resultMap>
+
+    <sql id="all_column">
+        `ID`
+        ,`BIZTYPE`
+        ,`FILENAME`
+        ,`FILENO`
+        ,`STATUS`
+        ,`TIP`
+        ,`CREATED`
+        ,`UPDATED`
+        ,`ISDELETED`
+    </sql>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO `FileImportStatus`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.bizType!=null">BIZTYPE,</if>
+            <if test="pojo.fileName!=null">FILENAME,</if>
+            <if test="pojo.fileNo!=null">FILENO,</if>
+            <if test="pojo.status!=null">STATUS,</if>
+            <if test="pojo.tip!=null">TIP,</if>
+            CREATED,
+            UPDATED
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.bizType!=null">#{pojo.bizType},</if>
+            <if test="pojo.fileName!=null">#{pojo.fileName},</if>
+            <if test="pojo.fileNo!=null">#{pojo.fileNo},</if>
+            <if test="pojo.status!=null">#{pojo.status},</if>
+            <if test="pojo.tip!=null">#{pojo.tip},</if>
+            UNIX_TIMESTAMP(now()),
+            UNIX_TIMESTAMP(now())
+        </trim>
+    </insert>
+
+    <update id="update">
+        UPDATE `FileImportStatus`
+        SET
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="pojo.bizType!=null">`BIZTYPE` = #{pojo.bizType},</if>
+            <if test="pojo.fileName!=null">`FILENAME` = #{pojo.fileName},</if>
+            <if test="pojo.fileNo!=null">`FILENO` = #{pojo.fileNo},</if>
+            <if test="pojo.status!=null">`STATUS` = #{pojo.status},</if>
+            <if test="pojo.tip!=null">`TIP` = #{pojo.tip},</if>
+            UNIX_TIMESTAMP(now())
+        </trim>
+        WHERE `id` = #{pojo.id} and `isDeleted` = 0
+        LIMIT 1
+    </update>
+
+    <update id="del" parameterType="java.lang.Long">
+        UPDATE `FileImportStatus`
+        SET `isDeleted` = 1 ,
+        `updated` = UNIX_TIMESTAMP(now())
+        WHERE `id` = #{id} and `isDeleted` = 0
+        LIMIT 1
+    </update>
+
+    <select id="getExistCount" resultType="java.lang.Integer" parameterType="Map" >
+        SELECT  count(id)
+        FROM  `FileImportStatus`
+        where `isDeleted` = 0
+        <if test="pojo.id != null"> AND `id` != #{pojo.id} </if>
+        <if test="pojo.bizType!=null"> AND `bizType` = #{pojo.bizType} </if>
+        <if test="pojo.fileName!=null"> AND `fileName` = #{pojo.fileName} </if>
+        <if test="pojo.fileNo!=null"> AND `fileNo` = #{pojo.fileNo} </if>
+        limit 1
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer" parameterType="Map" >
+        SELECT  count(id)
+        FROM  `FileImportStatus`
+        <include refid="whereCommon"/>
+        limit 1
+    </select>
+
+    <select id="queryByPage" resultMap="AllColumnMap" parameterType="Map">
+        select <include refid="all_column"/>
+        from `FileImportStatus`
+        <include refid="whereCommon"/>
+        order by `id` desc
+        <include refid="pageCommon"/>
+    </select>
+
+    <sql id="whereCommon">
+        where `isDeleted` = 0
+        <if test="pojo.bizType!=null"> AND `bizType` = #{pojo.bizType}</if>
+        <if test="pojo.fileName!=null"> AND `fileName` like concat('%', #{pojo.fileName}, '%')</if>
+    </sql>
+
+    <sql id="pageCommon">
+        <choose>
+        <when test="pojo.startRow != null and pojo.startRow gt -1 and pojo.limitNum != null and pojo.limitNum gt 0">
+            limit #{pojo.startRow}, #{pojo.limitNum}
+        </when>
+        <otherwise>
+            limit 200
+        </otherwise>
+        </choose>
+    </sql>
+</mapper>

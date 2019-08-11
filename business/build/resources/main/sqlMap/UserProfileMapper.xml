@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Generate by autoSQLMap Powered by duxing@Taobao -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.szmtjk.authentication.db.dao.UserProfileDAO">
+	<resultMap id="AllColumnMap"
+		type="com.szmtjk.authentication.db.entity.UserProfileDO">
+		<result property="id" column="id" />
+		<result property="nickName" column="nickName" />
+		<result property="realName" column="realName" />
+		<result property="gender" column="gender" />
+		<result property="birthDay" column="birthDay" />
+		<result property="department" column="department" />
+		<result property="creator" column="creator" />
+		<result property="creatorName" column="creatorName" />
+		<result property="passwd" column="passwd" />
+		<result property="loginName" column="loginName" />
+		<result property="localId" column="localId" />
+		<result property="created" column="created" />
+		<result property="updater" column="updater" />
+		<result property="updaterName" column="updaterName" />
+		<result property="updated" column="updated" />
+		<result property="isDeleted" column="isDeleted" />
+		<result property="mobile" column="mobile" />
+		<result property="systemId" column="systemId" />
+
+	</resultMap>
+
+	<sql id="all_column">
+		`id`
+		,`nickName`
+		,`realName`
+		,`gender`
+		,`birthDay`
+		,`department`
+		,`mobile`
+		,`creator`
+		,`creatorName`
+		,`created`
+		,`updater`
+		,`updaterName`
+		,`updated`
+		,`isDeleted`
+		, '' passwd
+		, '' loginName
+		, '' localId
+		,systemId
+	</sql>
+
+	<insert id="insertSelective" useGeneratedKeys="true"
+		keyProperty="pojo.id">
+		INSERT INTO UserProfile
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="pojo.nickName!=null"> `nickName`,</if>
+			<if test="pojo.realName!=null"> `realName`,</if>
+			<if test="pojo.birthDay!=null"> `birthDay`,</if>
+			<if test="pojo.mobile!=null"> `mobile`,</if>
+			<if test="pojo.department!=null"> `department`,</if>
+			<if test="pojo.creator!=null"> `creator`,</if>
+			<if test="pojo.creatorName!=null"> `creatorName`,</if>
+			<if test="pojo.updater!=null"> `updater`,</if>
+			<if test="pojo.updaterName!=null"> `updaterName`,</if>
+			<if test="pojo.systemId!=null"> `systemId`,</if>
+			`gender`,
+			`created`,
+			`updated`,
+			`isDeleted`
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="pojo.nickName!=null">#{pojo.nickName},</if>
+			<if test="pojo.realName!=null">#{pojo.realName},</if>
+			<if test="pojo.birthDay!=null">#{pojo.birthDay},</if>
+			<if test="pojo.mobile!=null">#{pojo.mobile},</if>
+			<if test="pojo.department!=null">#{pojo.department},</if>
+			<if test="pojo.creator!=null">#{pojo.creator},</if>
+			<if test="pojo.creatorName!=null">#{pojo.creatorName},</if>
+			<if test="pojo.updater!=null">#{pojo.updater},</if>
+			<if test="pojo.updaterName!=null">#{pojo.updaterName},</if>
+			<if test="pojo.systemId!=null">#{pojo.systemId},</if>
+			#{pojo.gender},
+			UNIX_TIMESTAMP(now()),
+			UNIX_TIMESTAMP(now()),
+			0
+		</trim>
+	</insert>
+
+	<update id="update">
+		UPDATE UserProfile
+		<set>
+			<if test="pojo.nickName!=null">`nickName` = #{pojo.nickName},</if>
+			<if test="pojo.realName!=null">`realName` = #{pojo.realName},</if>
+			<if test="pojo.birthDay!=null">`birthDay` = #{pojo.birthDay},</if>
+			<if test="pojo.mobile!=null">`mobile` = #{pojo.mobile},</if>
+			<if test="pojo.department!=null">`department` = #{pojo.department},</if>
+			<if test="pojo.updater!=null">`updater` = #{pojo.updater},</if>
+			<if test="pojo.updaterName!=null">`updaterName` = #{pojo.updaterName},</if>
+			<if test="pojo.isDeleted!=null">`isDeleted` = #{pojo.isDeleted},</if>
+			<if test="pojo.systemId!=null">`systemId` = #{pojo.systemId},</if>
+			`updated` = UNIX_TIMESTAMP(now()),
+			`gender` = #{pojo.gender}
+		</set>
+		WHERE `id` = #{pojo.id}
+	</update>
+
+	<update id="del" parameterType="java.lang.Long">
+		UPDATE UserProfile
+		SET `isDeleted` = 1 ,
+		`updated` = UNIX_TIMESTAMP(now())
+		WHERE `id` = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.Long"
+		resultMap="AllColumnMap">
+		SELECT
+		<include refid="all_column" />
+		FROM `UserProfile`
+		WHERE `id` = #{id}
+	</select>
+
+	<select id="getExistCount" resultType="java.lang.Integer"
+		parameterType="Map">
+		SELECT count(id)
+		FROM `UserProfile`
+		where `isDeleted` = 0
+		<if test="pojo.id != null"> AND `id` != #{pojo.id} </if>
+		<if test="pojo.nickName != null"> AND `nickName` = #{pojo.nickName} </if>
+		limit 1
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer"
+		parameterType="Map">
+		SELECT count(A1.id)
+		FROM UserProfile A1
+		INNER JOIN LocalAuth A2 ON A2.userId = A1.id
+		<include refid="pageQueryWhereCommon" />
+		limit 1
+	</select>
+
+	<select id="queryByPage" resultMap="AllColumnMap"
+		parameterType="Map">
+		SELECT A1.*, A2.loginName, A2.id AS localId
+		FROM UserProfile A1
+		INNER JOIN LocalAuth A2 ON A2.userId = A1.id
+		<include refid="pageQueryWhereCommon" />
+		order by A1.`id` desc
+		<include refid="pageCommon" />
+	</select>
+
+	<sql id="pageQueryWhereCommon">
+		where A1.`isDeleted` = 0
+		<if test="pojo.id != null"> AND A1.`id` = #{pojo.id} </if>
+		<if test="pojo.key != null">
+			AND (A1.`nickName` like concat('%', #{pojo.key}, '%'))
+		</if>
+		<if test="pojo.systemId != null"> AND A1.`systemId` = #{pojo.systemId} </if>
+	</sql>
+
+	<sql id="pageCommon">
+		<choose>
+			<when
+				test="pojo.startRow != null and pojo.startRow gt -1 and pojo.limitNum != null and pojo.limitNum gt 0">
+				limit #{pojo.startRow}, #{pojo.limitNum}
+			</when>
+			<otherwise>
+				limit 100
+			</otherwise>
+		</choose>
+	</sql>
+
+</mapper>

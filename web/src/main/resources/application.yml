@@ -1,0 +1,117 @@
+spring:
+  profiles:
+    active: local
+  http:
+    multipart:
+      maxFileSize: 10Mb
+      maxRequestSize: 100Mb
+  pid:
+    file: pid.file
+
+server:
+  port: 9091
+  contextPath: /auth
+
+fee:
+  rule: 0
+xyl:
+  upload:
+    baseDir: /data/pic/upload
+
+# OAuth weixin
+oauth:
+  weixin:
+    appId: wx716e867a8dfc27bb
+    secretKey: 39a1e707862681e0690dfb6336e6dc87
+
+wechat:
+  appSecretConfigList:
+    -
+      appType: 1
+      appId: wx0c7afe647c20cd75
+      appSecret: 0224b50e3edb78091fbc1f3f3ee4f742
+
+excel:
+  reservation:
+    zipUploadDir: /data/excel/reservation/zipUpload
+    unzippedDir: /data/excel/reservation/unzipped
+    invalidFileDir: /data/excel/reservation/invalid
+  report:
+    zipUploadDir: /data/excel/report/zipUpload
+    unzippedDir: /data/excel/report/unzipped
+    invalidFileDir: /data/excel/report/invalid
+
+# Different profiles' configuration
+---
+spring:
+  profiles: local
+
+druid:
+  group:
+    defaultGroup: d_myc
+    balance: robin
+  datasource:
+    - identity: myc_master
+      group: d_myc
+      role: master
+      driverClassName: com.mysql.jdbc.Driver
+      mapperLocations: classpath*:sqlMap/**/*Mapper.xml
+      url: jdbc:mysql://47.92.210.161:6033/auth?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: szMtjk_2018
+      initialSize: 5
+      filters: stat
+      maxActive: 8
+      minIdle: 5
+      maxWait: 50000
+      validationQuery: SELECT 1
+
+---
+spring:
+  profiles: dev
+
+druid:
+  group:
+    defaultGroup: d_myc
+    balance: robin
+  datasource:
+    -
+      identity: myc_master
+      group: d_myc
+      role: master
+      driverClassName: com.mysql.jdbc.Driver
+      mapperLocations: classpath*:sqlMap/**/*Mapper.xml
+      url: jdbc:mysql://127.0.0.1:6033/mtjk_dev?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: szMtjk_2018
+      initialSize: 5
+      filters: stat
+      maxActive: 8
+      minIdle: 5
+      maxWait: 50000
+      validationQuery: SELECT 1
+
+---
+spring:
+  profiles: prd
+
+druid:
+  group:
+    defaultGroup: d_myc
+    balance: robin
+  datasource:
+    -
+      identity: myc_master
+      group: d_myc
+      role: master
+      driverClassName: com.mysql.jdbc.Driver
+      mapperLocations: classpath*:sqlMap/**/*Mapper.xml
+      url: jdbc:mysql://127.0.0.1:6033/mtjk_prd?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: szMtjk_2018
+      initialSize: 5
+      filters: stat
+      maxActive: 8
+      minIdle: 5
+      maxWait: 50000
+      validationQuery: SELECT 1

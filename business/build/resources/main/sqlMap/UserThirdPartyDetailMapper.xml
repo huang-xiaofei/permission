@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.szmtjk.business.db.dao.UserThirdPartyDetailDAO">
+    <resultMap id="AllColumnMap" type="com.szmtjk.business.db.entity.UserThirdPartyDetailDO">
+        <result property="id" column="id"/>
+        <result property="thirdType" column="thirdType"/>
+        <result property="thirdId" column="thirdId"/>
+        <result property="appType" column="appType"/>
+        <result property="thirdId2" column="thirdId2"/>
+        <result property="extra" column="extra"/>
+        <result property="created" column="created"/>
+        <result property="updated" column="updated"/>
+    </resultMap>
+
+    <sql id="all_column">
+        `id`
+        ,`thirdType`
+        ,`thirdId`
+        ,`appType`
+        ,`thirdId2`
+        ,`extra`
+        ,`created`
+        ,`updated`
+    </sql>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO `UserThirdPartyDetail`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+
+            <if test="pojo.thirdType!=null">thirdType, </if>
+            <if test="pojo.thirdId!=null">thirdId, </if>
+            <if test="pojo.appType!=null">appType, </if>
+            <if test="pojo.thirdId2!=null">thirdId2, </if>
+            <if test="pojo.extra!=null">extra, </if>
+            created,
+            updated,
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.thirdType!=null">#{pojo.thirdType},</if>
+            <if test="pojo.thirdId!=null">#{pojo.thirdId},</if>
+            <if test="pojo.appType!=null">#{pojo.appType},</if>
+            <if test="pojo.thirdId2!=null">#{pojo.thirdId2},</if>
+            <if test="pojo.extra!=null">#{pojo.extra},</if>
+            UNIX_TIMESTAMP(now()),
+            UNIX_TIMESTAMP(now()),
+        </trim>
+    </insert>
+
+    <update id="update">
+        UPDATE `UserThirdPartyDetail`
+        SET
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="pojo.thirdType!=null">`thirdType` = #{pojo.thirdType},</if>
+            <if test="pojo.thirdId!=null">`thirdId` = #{pojo.thirdId},</if>
+            <if test="pojo.appType!=null">`appType` = #{pojo.appType},</if>
+            <if test="pojo.thirdId2!=null">`thirdId2` = #{pojo.thirdId2},</if>
+            <if test="pojo.extra!=null">`extra` = #{pojo.extra},</if>
+            UNIX_TIMESTAMP(now()),
+        </trim>
+        WHERE `id` = #{pojo.id} and `isDeleted` = 0
+        LIMIT 1
+    </update>
+
+    <update id="del" parameterType="java.lang.Long">
+        UPDATE `UserThirdPartyDetail`
+        SET `isDeleted` = 1 ,
+        `updated` = UNIX_TIMESTAMP(now())
+        WHERE `id` = #{id} and `isDeleted` = 0
+        LIMIT 1
+    </update>
+
+    <update id="delByThirdId">
+        UPDATE `UserThirdPartyDetail`
+        SET `isDeleted` = 1 ,
+        `updated` = UNIX_TIMESTAMP(now())
+        WHERE `isDeleted` = 0
+          and `thirdId` = #{thirdId}
+          and `thirdType` = #{thirdType}
+        LIMIT 1
+    </update>
+
+    <select id="getExistCount" resultType="java.lang.Integer" parameterType="Map" >
+        SELECT  count(id)
+        FROM  `UserThirdPartyDetail`
+        where `isDeleted` = 0
+        <if test="pojo.id != null"> AND `id` != #{pojo.id} </if>
+        <if test="pojo.thirdType!=null"> AND `thirdType` = #{pojo.thirdType}</if>
+        <if test="pojo.thirdId!=null"> AND `thirdId` = #{pojo.thirdId}</if>
+        <if test="pojo.appType!=null"> AND `appType` = #{pojo.appType}</if>
+        <if test="pojo.thirdId2!=null"> AND `thirdId2` = #{pojo.thirdId2}</if>
+        limit 1
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer" parameterType="Map" >
+        SELECT  count(id)
+        FROM  `UserThirdPartyDetail`
+        where `isDeleted` = 0
+        <if test="pojo.id != null"> AND `id` != #{id} </if>
+        <if test="pojo.thirdType!=null"> AND `thirdType` = #{pojo.thirdType}</if>
+        <if test="pojo.thirdId!=null"> AND `thirdId` = #{pojo.thirdId}</if>
+        <if test="pojo.appType!=null"> AND `appType` = #{pojo.appType}</if>
+        <if test="pojo.thirdId2!=null"> AND `thirdId2` = #{pojo.thirdId2}</if>
+        limit 1
+    </select>
+
+    <select id="queryByPage" resultMap="AllColumnMap" parameterType="Map">
+        select <include refid="all_column"/>
+        from `UserThirdPartyDetail`
+        where `isDeleted` = 0
+        <if test="pojo.id != null"> AND `id` != #{id} </if>
+        <if test="pojo.thirdType!=null"> AND `thirdType` = #{pojo.thirdType}</if>
+        <if test="pojo.thirdId!=null"> AND `thirdId` = #{pojo.thirdId}</if>
+        <if test="pojo.appType!=null"> AND `appType` = #{pojo.appType}</if>
+        <if test="pojo.thirdId2!=null"> AND `thirdId2` = #{pojo.thirdId2}</if>
+        order by `id` desc
+        <include refid="pageCommon"/>
+    </select>
+
+    <sql id="pageCommon">
+        <choose>
+            <when test="pojo.startRow != null and pojo.startRow gt -1 and pojo.limitNum != null and pojo.limitNum gt 0">
+                limit #{pojo.startRow}, #{pojo.limitNum}
+            </when>
+            <otherwise>
+                limit 20
+            </otherwise>
+        </choose>
+    </sql>
+</mapper>
