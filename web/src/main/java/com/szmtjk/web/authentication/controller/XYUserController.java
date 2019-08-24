@@ -58,11 +58,15 @@ public class XYUserController extends BaseCRUDController<UserProfile, UserProfil
 	public JsonRet<Long> add(@JsonParam UserProfile userProfile) {
 		JsonRet<Long> ret = userProfileService.add(userProfile);
 		if (ret.isSuccess()) {
+			long id =ret.getData();
 			LocalAuth localAuth = new LocalAuth();
 			localAuth.setLoginName(userProfile.getLoginName());
 			localAuth.setPasswd(userProfile.getPasswd());
-			localAuth.setUserId(ret.getData());
-			localAuthService.add(localAuth);
+			localAuth.setUserId(id);
+			ret =localAuthService.add(localAuth);
+			if(!ret.isSuccess()) {
+				userProfileService.del(id);
+			}
 		}
 		return ret;
 	}
